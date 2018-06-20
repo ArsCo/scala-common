@@ -16,13 +16,13 @@
 
 package ars.common
 
-import org.scalatest.Suite
+import org.scalatest.Suites
 
 /** All project tests.
   *
   * @author Arsen Ibragimov (ars)
   * @since 0.0.1
   */
-class AllProjectTests extends Suite(
+class AllProjectTests extends Suites(
   new enumeration.AllPackageTests
 )

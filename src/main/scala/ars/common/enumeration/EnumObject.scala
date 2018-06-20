@@ -22,16 +22,16 @@ import scala.util.{Failure, Success, Try}
 
 /** Enumeration object base trait.
   *
-  * @tparam EnumType the enumeration type
+  * @tparam EnumValueType the enumeration type
   * @tparam CodeType the enumeration code type
   *
   * @author Arsen Ibragimov (ars)
   * @since 0.0.1
   */
-trait EnumObject[EnumType <: EnumValue[_], CodeType] {
+trait EnumObject[EnumValueType <: EnumValue[CodeType], CodeType] {
 
   /** All values. */
-  def values: Seq[EnumType]
+  def values: Seq[EnumValueType]
 
   /**
     * Gets enum value by code.
@@ -40,7 +40,7 @@ trait EnumObject[EnumType <: EnumValue[_], CodeType] {
     *
     * @return the value
     */
-  def valueOf(code: CodeType): Try[EnumType] = {
+  def valueOf(code: CodeType): Try[EnumValueType] = {
     requireNotNull(code, "code")
 
     values.filter(_.code == code) match {

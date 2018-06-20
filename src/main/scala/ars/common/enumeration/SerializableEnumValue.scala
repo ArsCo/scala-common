@@ -22,6 +22,7 @@ import scala.reflect.runtime.universe._
 import scala.util.{Failure, Success}
 
 
+// TODO: Correct example!
 /** Serializable Scala enumeration value. There're two subclasses [[SerializableIntEnumValue]] fro integer codes
   * and [[SerializableStringEnumValue]] for string codes.
   *
@@ -47,13 +48,18 @@ import scala.util.{Failure, Success}
   *   }
   * }}}
   *
-  * @tparam EnumObject the enumeration object type
+  * @tparam EnumValueType the enumeration value type
+  * @tparam EnumObjectType the enumeration object type
   * @tparam CodeType the code type
   *
   * @author Arsen Ibragimov (ars)
   * @since 0.0.1
   */
- abstract class SerializableEnumValue[EnumObject: TypeTag, CodeType] extends EnumValue[CodeType] with Serializable {
+ abstract class SerializableEnumValue[
+    EnumValueType <: EnumValue[CodeType],
+    EnumObjectType <: EnumObject[EnumValueType, CodeType]: TypeTag,
+    CodeType
+] extends EnumValue[CodeType] with Serializable {
 
   protected[this] var serializationCode: CodeType = _
 
@@ -96,8 +102,15 @@ import scala.util.{Failure, Success}
 
   @throws[ObjectStreamException]
   def readResolve(): Any = {
-    val m = typeOf[EnumObject].member(TermName("valueOf")).asMethod // TODO: Try
-    m(code) match {
+    val objectTypeTag = typeTag[EnumObjectType]
+    val mirror = objectTypeTag.mirror
+    val tpe = objectTypeTag.tpe
+    val module = tpe.termSymbol.asModule
+
+    val enumModule = mirror.reflectModule(module)
+    val instance = enumModule.instance.asInstanceOf[EnumObjectType]
+
+    instance.valueOf(code) match {
       case Success(v) => v
       case Failure(e) => throw wrapInRuntimeException(e)
     }

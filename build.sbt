@@ -79,7 +79,7 @@ lazy val `scala-common` = (project in file("."))
     coverageSettings,
 
     libraryDependencies ++= /*Dependencies.logging*/ Dependencies.testing ++
-                            Dependencies.kafka ++ Dependencies.zookeeper ++ Dependencies.preconditions ++
+                            Dependencies.preconditions ++
     Seq(
       "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0",
       "org.slf4j" % "jcl-over-slf4j" % "1.7.21",

@@ -16,7 +16,11 @@
 
 package ars.common.enumeration
 
+import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream}
+
 import ars.common.AbstractBaseTest
+
+import scala.util.{Failure, Success, Try}
 
 /** Tests for [[SerializableEnumValue]].
   *
@@ -25,4 +29,31 @@ import ars.common.AbstractBaseTest
   */
 class SerializableEnumValueTest extends AbstractBaseTest {
 
+  "SerializableEnumValue" must "be serializable" in {
+    val oos = new ObjectOutputStream(new ByteArrayOutputStream())
+    oos.writeObject(MyEnumValues.FirstValue)
+  }
+
+  it must "be deserializable" in {
+    val os = new ByteArrayOutputStream()
+    val oos = new ObjectOutputStream(os)
+    oos.writeObject(MyEnumValues.FirstValue)
+    oos.flush()
+
+    val serializedEnum = os.toByteArray
+
+    val ois = new ObjectInputStream(new ByteArrayInputStream(serializedEnum))
+    val obj = ois.readObject()
+    assert(obj.isInstanceOf[MyEnumValues.FirstValue.type], obj.getClass.getCanonicalName)
+  }
+}
+
+sealed abstract class MyEnumValue(code: Int) extends SerializableIntEnumValue[MyEnumValue, MyEnumValues.type](code)
+
+object MyEnumValues extends EnumObject[MyEnumValue, Int] {
+  final case object FirstValue extends MyEnumValue(1)
+  final case object SecondValue extends MyEnumValue(2)
+  final case object ThirdValue extends MyEnumValue(3)
+
+  override def values: Seq[MyEnumValue] = Seq(FirstValue, SecondValue, ThirdValue)
 }

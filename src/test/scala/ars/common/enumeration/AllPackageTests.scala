@@ -27,7 +27,6 @@ class AllPackageTests extends Suites(
   new EnumObjectTest,
   new EnumValueTest,
 
-  new SerializableEnumObjectTest,
   new SerializableEnumValueTest,
 
   new SerializableIntEnumValueTest,

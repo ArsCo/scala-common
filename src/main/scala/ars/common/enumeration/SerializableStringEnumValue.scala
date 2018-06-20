@@ -16,18 +16,22 @@
 
 package ars.common.enumeration
 
-import java.io.{ObjectInputStream, ObjectOutputStream}
+import java.io.{ObjectInputStream, ObjectOutputStream, ObjectStreamException}
 
-import com.sun.tools.javac.code.TypeTag
+import scala.reflect.runtime.universe._
 
 /** Serializable to [[String]] Scala enumeration value.
   *
   * @tparam EnumType the enumeration value type
+  * @tparam EnumObjectType the enumeration object type
+  *
   * @author Arsen Ibragimov (ars)
   * @since 0.0.1
   */
-abstract class SerializableStringEnumValue[EnumType: TypeTag](val code: String)
-  extends SerializableEnumValue[EnumType, String] with Serializable {
+abstract class SerializableStringEnumValue[
+    EnumType <: EnumValue[String]: TypeTag,
+    EnumObjectType <: EnumObject[EnumType, String]: TypeTag
+](val code: String) extends SerializableEnumValue[EnumType, EnumObjectType, String] {
 
   def serialize(out: ObjectOutputStream): Unit = out.writeUTF(code)
   def deserialize(in: ObjectInputStream): String = in.readUTF()
