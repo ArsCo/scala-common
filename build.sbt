@@ -83,7 +83,7 @@ lazy val `scala-common` = (project in file("."))
     Seq(
       "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0",
       "org.slf4j" % "jcl-over-slf4j" % "1.7.21",
-      "org.apache.logging.log4j" % "log4j-slf4j-impl" % Log4jVersion,
+      "org.apache.logging.log4j" % "log4j-slf4j-impl" % Log4jVersion % Test,
       "org.apache.logging.log4j" % "log4j-api" % Log4jVersion,
       "org.apache.logging.log4j" % "log4j-core" % Log4jVersion
     )
