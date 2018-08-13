@@ -20,7 +20,7 @@ import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, 
 
 import ars.common.AbstractBaseTest
 
-import scala.util.{Failure, Success, Try}
+import scala.reflect.runtime.universe._
 
 /** Tests for [[SerializableEnumValue]].
   *
@@ -48,7 +48,12 @@ class SerializableEnumValueTest extends AbstractBaseTest {
   }
 }
 
-sealed abstract class MyEnumValue(code: Int) extends SerializableIntEnumValue[MyEnumValue, MyEnumValues.type](code)
+sealed abstract class MyEnumValue(override val code: Int) extends SerializableEnumValue[MyEnumValue, MyEnumValues.type, Int] {
+  override protected[this] val objectTypeTag: TypeTag[MyEnumValues.type] = typeTag[MyEnumValues.type]
+
+  override def serialize(out: ObjectOutputStream): Unit = {}
+  override def deserialize(in: ObjectInputStream): Int = 1
+}
 
 object MyEnumValues extends EnumObject[MyEnumValue, Int] {
   final case object FirstValue extends MyEnumValue(1)

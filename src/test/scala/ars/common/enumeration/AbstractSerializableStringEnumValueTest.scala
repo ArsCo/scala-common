@@ -20,45 +20,39 @@ import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, 
 
 import ars.common.AbstractBaseTest
 
-import scala.reflect.runtime.universe._
-
-/** Tests for [[SerializableIntEnumValue]].
+/** Tests for [[AbstractSerializableStringEnumValue]].
   *
   * @author Arsen Ibragimov (ars)
   * @since 0.0.1
   */
-class SerializableIntEnumValueTest extends AbstractBaseTest {
+class AbstractSerializableStringEnumValueTest extends AbstractBaseTest {
 
-  "SerializableIntEnumValue" must "be serializable" in {
+  "AbstractSerializableStringEnumValue" must "be serializable" in {
     val oos = new ObjectOutputStream(new ByteArrayOutputStream())
-    oos.writeObject(MyIntEnumValues.FirstValue)
+    oos.writeObject(AbsMyStringEnumValues.FirstValue)
   }
 
   it must "be deserializable" in {
     val os = new ByteArrayOutputStream()
     val oos = new ObjectOutputStream(os)
-    oos.writeObject(MyIntEnumValues.FirstValue)
+    oos.writeObject(AbsMyStringEnumValues.FirstValue)
     oos.flush()
 
     val serializedEnum = os.toByteArray
 
     val ois = new ObjectInputStream(new ByteArrayInputStream(serializedEnum))
     val obj = ois.readObject()
-    assert(obj.isInstanceOf[MyIntEnumValues.FirstValue.type], obj.getClass.getCanonicalName)
+    assert(obj.isInstanceOf[AbsMyStringEnumValues.FirstValue.type], obj.getClass.getCanonicalName)
   }
-
 }
 
-sealed abstract class MyIntEnumValue(override val code: Int)
-  extends SerializableIntEnumValue[MyIntEnumValue, MyIntEnumValues.type] {
+sealed abstract class AbsMyStringEnumValue(override val code: String)
+  extends AbstractSerializableStringEnumValue[AbsMyStringEnumValue, AbsMyStringEnumValues.type](code)
 
-  override protected[this] val objectTypeTag: TypeTag[MyIntEnumValues.type] = typeTag[MyIntEnumValues.type]
-}
+object AbsMyStringEnumValues extends EnumObject[AbsMyStringEnumValue, String] {
+  final case object FirstValue  extends AbsMyStringEnumValue("first")
+  final case object SecondValue extends AbsMyStringEnumValue("second")
+  final case object ThirdValue  extends AbsMyStringEnumValue("third")
 
-object MyIntEnumValues extends EnumObject[MyIntEnumValue, Int] {
-  final case object FirstValue extends MyIntEnumValue(1)
-  final case object SecondValue extends MyIntEnumValue(2)
-  final case object ThirdValue extends MyIntEnumValue(3)
-
-  override def values: Seq[MyIntEnumValue] = Seq(FirstValue, SecondValue, ThirdValue)
+  override def values: Seq[AbsMyStringEnumValue] = Seq(FirstValue, SecondValue, ThirdValue)
 }

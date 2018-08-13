@@ -16,12 +16,11 @@
 
 package ars.common.enumeration
 
-import java.io.{ObjectInputStream, ObjectOutputStream, ObjectStreamException}
-
-import scala.reflect.runtime.universe._
+import java.io.{ObjectInputStream, ObjectOutputStream}
 
 
 /** Serializable to `Int` Scala enumeration value.
+  * To use this trait you need to implement method `objectTypeTag()`.
   *
   * @tparam EnumValueType the enumeration value type
   * @tparam EnumObjectType the enumeration object type
@@ -29,10 +28,10 @@ import scala.reflect.runtime.universe._
   * @author Arsen Ibragimov (ars)
   * @since 0.0.1
   */
-abstract class SerializableIntEnumValue[
-    EnumValueType <: EnumValue[Int]: TypeTag,
-    EnumObjectType <: EnumObject[EnumValueType, Int]: TypeTag
-](val code: Int) extends SerializableEnumValue[EnumValueType, EnumObjectType, Int] {
+trait SerializableIntEnumValue[
+    EnumValueType <: EnumValue[Int],
+    EnumObjectType <: EnumObject[EnumValueType, Int]
+] extends SerializableEnumValue[EnumValueType, EnumObjectType, Int] {
 
   def serialize(out: ObjectOutputStream): Unit = out.writeInt(code)
   def deserialize(in: ObjectInputStream): Int = in.readInt()

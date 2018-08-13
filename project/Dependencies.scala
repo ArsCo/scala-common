@@ -25,18 +25,25 @@ object Dependencies {
   val ScalaLoggingVersion = "3.7.2"
   val ScalaTestVersion = "3.0.0"
 
-  val ScalaPreconditionsVersion = "0.1.0"
+  val LogbackVersion = "1.2.3"
+  val LogstashEncoderVersion = "5.0"
+
+  val ScalaPreconditionsVersion = "0.1.2"
 
   val ScalaLogging = "com.typesafe.scala-logging" %% "scala-logging" % ScalaLoggingVersion
-  val Jcl2slf = "org.slf4j" % "jcl-over-slf4j" % "1.7.21"
 
   val ScalaTest = "org.scalatest" %% "scalatest" % ScalaTestVersion % Test
 
+  val LoggingImpl = Seq(
+    "ch.qos.logback" % "logback-classic" % LogbackVersion,
+    "net.logstash.logback" % "logstash-logback-encoder" % LogstashEncoderVersion
+  )
 
   val ScalaPreconditions = "ru.ars-co" %% "scala-preconditions" % ScalaPreconditionsVersion
 
 
-  val logging = Seq(ScalaLogging, Jcl2slf)
-  val testing = Seq(ScalaTest)
   val preconditions = Seq(ScalaPreconditions)
+  val logging = Seq(ScalaLogging)
+
+  val testing = Seq(ScalaTest) ++ LoggingImpl.map(_ % Test)
 }

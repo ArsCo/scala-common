@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-package ars.common
+package ars.common.enumeration
 
-import org.scalatest.Suites
+import scala.reflect.runtime.universe._
 
-/** All project tests.
+/** Serializable to [[String]] Scala enumeration value.
+  *
+  * @tparam EnumValueType the enumeration value type
+  * @tparam EnumObjectType the enumeration object type
   *
   * @author Arsen Ibragimov (ars)
   * @since 0.0.1
   */
-class AllProjectTests extends Suites(
-  new enumeration.AllPackageTests
-)
+abstract class AbstractSerializableStringEnumValue[
+    EnumValueType <: EnumValue[String],
+    EnumObjectType <: EnumObject[EnumValueType, String]: TypeTag
+](override val code: String) extends SerializableStringEnumValue[EnumValueType, EnumObjectType] {
+
+  override protected[this] def objectTypeTag(): TypeTag[EnumObjectType] = typeTag[EnumObjectType]
+}

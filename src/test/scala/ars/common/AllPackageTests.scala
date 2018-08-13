@@ -14,26 +14,16 @@
  * limitations under the License.
  */
 
-package ars.common.enumeration
+package ars.common
 
-import java.io.{ObjectInputStream, ObjectOutputStream}
+import org.scalatest.Suites
 
-
-/** Serializable to [[String]] Scala enumeration value.
-  * To use this trait you need to implement method `objectTypeTag()`.
-  *
-  * @tparam EnumType the enumeration value type
-  * @tparam EnumObjectType the enumeration object type
+/** All tests for package `ars.common`.
   *
   * @author Arsen Ibragimov (ars)
   * @since 0.0.1
   */
-trait SerializableStringEnumValue[
-    EnumType <: EnumValue[String],
-    EnumObjectType <: EnumObject[EnumType, String]
-] extends SerializableEnumValue[EnumType, EnumObjectType, String] {
-
-  def serialize(out: ObjectOutputStream): Unit = out.writeUTF(code)
-  def deserialize(in: ObjectInputStream): String = in.readUTF()
-}
-
+class AllPackageTests extends Suites(
+  new enumeration.AllPackageTests,
+  new exception.AllPackageTests
+)

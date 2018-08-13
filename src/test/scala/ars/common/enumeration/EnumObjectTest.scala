@@ -18,6 +18,8 @@ package ars.common.enumeration
 
 import ars.common.AbstractBaseTest
 
+import scala.util.Failure
+
 /** Tests for [[EnumObject]].
   *
   * @author Arsen Ibragimov (ars)
@@ -25,4 +27,45 @@ import ars.common.AbstractBaseTest
   */
 class EnumObjectTest extends AbstractBaseTest {
 
+  sealed abstract class MyEnumValue(override val code: String) extends EnumValue[String]
+
+  object MyEnumValues extends EnumObject[MyEnumValue, String] {
+    final case object FirstValue  extends MyEnumValue("first")
+    final case object SecondValue extends MyEnumValue("second")
+    final case object ThirdValue  extends MyEnumValue("third")
+
+    override def values: Seq[MyEnumValue] = Seq(FirstValue, SecondValue, ThirdValue)
+  }
+
+  "valueOf()" must "validate args" in {
+    intercept[IllegalArgumentException] {
+      MyEnumValues.valueOf(null)
+    }
+  }
+
+  it must "get correct enum instance by code" in {
+    import MyEnumValues._
+
+    assertResult(FirstValue){ valueOf("first").get }
+    assertResult(SecondValue){ valueOf("second").get }
+    assertResult(ThirdValue){ valueOf("third").get }
+
+    valueOf("forth") match {
+      case Failure(_) =>
+      case _ => fail()
+    }
+  }
+
+  it must "get correct enum instance by name" in {
+    import MyEnumValues._
+
+    assertResult(FirstValue){ valueByName("FirstValue").get }
+    assertResult(SecondValue){ valueByName("SecondValue").get }
+    assertResult(ThirdValue){ valueByName("ThirdValue").get }
+
+    valueOf("ForthValue") match {
+      case Failure(_) =>
+      case _ => fail()
+    }
+  }
 }

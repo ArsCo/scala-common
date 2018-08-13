@@ -18,6 +18,8 @@ package ars.common.enumeration
 
 import java.io.{IOException, ObjectInputStream, ObjectOutputStream, ObjectStreamException}
 
+import ars.common.exception.ExceptionUtils
+
 import scala.reflect.runtime.universe._
 import scala.util.{Failure, Success}
 
@@ -55,27 +57,17 @@ import scala.util.{Failure, Success}
   * @author Arsen Ibragimov (ars)
   * @since 0.0.1
   */
- abstract class SerializableEnumValue[
+trait SerializableEnumValue[
     EnumValueType <: EnumValue[CodeType],
-    EnumObjectType <: EnumObject[EnumValueType, CodeType]: TypeTag,
+    EnumObjectType <: EnumObject[EnumValueType, CodeType],
     CodeType
 ] extends EnumValue[CodeType] with Serializable {
 
   protected[this] var serializationCode: CodeType = _
 
-  /**
-    * Wraps exception in runtime exception if it's not subtype of [[RuntimeException]].
-    *
-    * @param t the throwable (non-null)
-    *
-    * @return the [[RuntimeException]]
-    */
-  protected def wrapInRuntimeException(t: Throwable): RuntimeException = {
-    t match {
-      case r: RuntimeException => r
-      case e => new RuntimeException(e)
-    }
-  }
+  protected[this] def objectTypeTag(): TypeTag[EnumObjectType]
+
+
 
   @throws[IOException]
   def writeObject(out: ObjectOutputStream): Unit = serialize(out)
@@ -102,17 +94,17 @@ import scala.util.{Failure, Success}
 
   @throws[ObjectStreamException]
   def readResolve(): Any = {
-    val objectTypeTag = typeTag[EnumObjectType]
-    val mirror = objectTypeTag.mirror
-    val tpe = objectTypeTag.tpe
-    val module = tpe.termSymbol.asModule
-
-    val enumModule = mirror.reflectModule(module)
-    val instance = enumModule.instance.asInstanceOf[EnumObjectType]
-
-    instance.valueOf(code) match {
+      enumModule.valueOf(code) match {
       case Success(v) => v
-      case Failure(e) => throw wrapInRuntimeException(e)
+      case Failure(e) => throw ExceptionUtils.wrapInRuntimeException(e)
     }
+  }
+
+  private def enumModule = {
+    val t = objectTypeTag()
+    val module = t.tpe.termSymbol.asModule
+
+    val enumModule = t.mirror.reflectModule(module)
+    enumModule.instance.asInstanceOf[EnumObjectType]
   }
 }

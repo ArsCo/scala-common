@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-package ars.common.enumeration
+package ars.common.exception
 
-import java.io.{ObjectInputStream, ObjectOutputStream}
-
-
-/** Serializable to [[String]] Scala enumeration value.
-  * To use this trait you need to implement method `objectTypeTag()`.
-  *
-  * @tparam EnumType the enumeration value type
-  * @tparam EnumObjectType the enumeration object type
+/** Exception utility methods.
   *
   * @author Arsen Ibragimov (ars)
   * @since 0.0.1
   */
-trait SerializableStringEnumValue[
-    EnumType <: EnumValue[String],
-    EnumObjectType <: EnumObject[EnumType, String]
-] extends SerializableEnumValue[EnumType, EnumObjectType, String] {
+object ExceptionUtils {
 
-  def serialize(out: ObjectOutputStream): Unit = out.writeUTF(code)
-  def deserialize(in: ObjectInputStream): String = in.readUTF()
+  /**
+    * Wraps exception in runtime exception if it's not subtype of [[RuntimeException]].
+    *
+    * @param t the throwable (non-null)
+    *
+    * @return the [[RuntimeException]]
+    */
+  def wrapInRuntimeException(t: Throwable): RuntimeException = {
+    t match {
+      case r: RuntimeException => r
+      case e => new RuntimeException(e)
+    }
+  }
 }
-

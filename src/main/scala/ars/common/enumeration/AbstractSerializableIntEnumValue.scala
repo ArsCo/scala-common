@@ -16,24 +16,22 @@
 
 package ars.common.enumeration
 
-import java.io.{ObjectInputStream, ObjectOutputStream}
+import scala.reflect.runtime.universe._
 
 
-/** Serializable to [[String]] Scala enumeration value.
-  * To use this trait you need to implement method `objectTypeTag()`.
+/** Serializable to `Int` Scala enumeration value implementation.
+  * This abstract class already implements method `objectTypeTag()` of [[SerializableIntEnumValue]].
   *
-  * @tparam EnumType the enumeration value type
+  * @tparam EnumValueType the enumeration value type
   * @tparam EnumObjectType the enumeration object type
   *
   * @author Arsen Ibragimov (ars)
   * @since 0.0.1
   */
-trait SerializableStringEnumValue[
-    EnumType <: EnumValue[String],
-    EnumObjectType <: EnumObject[EnumType, String]
-] extends SerializableEnumValue[EnumType, EnumObjectType, String] {
+abstract class AbstractSerializableIntEnumValue[
+    EnumValueType <: EnumValue[Int],
+    EnumObjectType <: EnumObject[EnumValueType, Int]: TypeTag
+](override val code: Int) extends SerializableIntEnumValue[EnumValueType, EnumObjectType] {
 
-  def serialize(out: ObjectOutputStream): Unit = out.writeUTF(code)
-  def deserialize(in: ObjectInputStream): String = in.readUTF()
+  override protected[this] def objectTypeTag(): TypeTag[EnumObjectType] = typeTag[EnumObjectType]
 }
-
