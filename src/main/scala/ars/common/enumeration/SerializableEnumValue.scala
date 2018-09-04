@@ -108,3 +108,4 @@ trait SerializableEnumValue[
     enumModule.instance.asInstanceOf[EnumObjectType]
   }
 }
+
