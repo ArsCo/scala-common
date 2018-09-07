@@ -16,7 +16,6 @@
 
 package ars.common.enumeration
 
-import ars.precondition.MessageBuilder.NoNameParameter
 import ars.precondition.require.Require
 
 import scala.util.Try
